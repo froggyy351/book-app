@@ -3,6 +3,7 @@ package com.bookmanager;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ public class App
     private static final String PASSWORD = "";
 
     public static void main( String[] args ){
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in, "MS932");
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);){
             //テーブル作成    
@@ -31,7 +32,6 @@ public class App
 
             //Insert文
             String insertSQL = "INSERT INTO books (title, author) VALUES (?, ?)";
-            
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
                 pstmt.setString(1, title);
                 pstmt.setString(2, author);
@@ -41,6 +41,24 @@ public class App
                     System.out.println("データベース保存しました！");
                 }
             }
+
+            //select文
+            System.out.println("====蔵書一覧====");
+
+            String selectSQL = "SELECT id, title, author FROM books";
+            try (PreparedStatement pstmt = conn.prepareStatement(selectSQL);
+                ResultSet rs = pstmt.executeQuery()) {
+                    
+                    while (rs.next()) {
+                        int id = rs.getInt("id");
+                        String bTitle = rs.getString("title");
+                        String bAuthor = rs.getString("author");
+                        System.out.println(id + ": " + bTitle + "（" + bAuthor + "）");
+                    }
+                
+            }
+
+            System.out.println("=============");
 
         } catch (SQLException e) {
             System.err.println("データベース関連例外が発生しました。");
