@@ -17,6 +17,8 @@ public class App
     private static final String PASSWORD = "";
 
     public static void main( String[] args ){
+        //SJISとしてユーザからの入力を受け取る
+        //はじめ何も指定しなかったため、UTF-8として読んで文字化けしてDB登録されてしまった
         Scanner scanner = new Scanner(System.in, "MS932");
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);){
