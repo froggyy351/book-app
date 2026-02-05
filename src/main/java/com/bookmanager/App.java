@@ -60,6 +60,24 @@ public class App
                 
             }
 
+            //delete文
+            System.out.println("====蔵書削除====");
+
+            //ユーザーから入力を受け取る
+            System.out.println("削除したい蔵書のIDを入力してね");
+            int deleteId = scanner.nextInt();
+
+            String deleteSQL = "DELETE FROM books where id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(deleteSQL)) {
+                pstmt.setInt(1, deleteId );
+                int rowsDeleted = pstmt.executeUpdate();
+                if(rowsDeleted > 0){
+                    System.out.println("ID: " + deleteId + "の書籍をDBから削除しました。");
+                } else {
+                    System.out.println("該当するIDが見つかりませんでした。");
+                }
+            }
+
             System.out.println("=============");
 
         } catch (SQLException e) {
