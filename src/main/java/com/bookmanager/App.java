@@ -81,7 +81,7 @@ public class App
             System.out.println("=============");
 
         } catch (SQLException e) {
-            System.err.println("データベース関連例外が発生しました。");
+            System.err.println("データベース関連例外が発生しました");
             e.printStackTrace();
         } finally {
             scanner.close();
