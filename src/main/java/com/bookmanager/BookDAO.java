@@ -34,7 +34,7 @@ public class BookDAO {
     public List<Book> findAll() throws SQLException {
         String selectSQL = "SELECT id, title, author FROM books";        
         List<Book> books = new ArrayList<>();
-        
+
         try (PreparedStatement pstmt = conn.prepareStatement(selectSQL);
                 ResultSet rs = pstmt.executeQuery();) {
 
@@ -49,6 +49,19 @@ public class BookDAO {
                     }
                     
                     return books;
+        } 
+    }
+
+    public boolean deleteById(int id) throws SQLException{
+        String deleteSQL = "DELETE FROM books where id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(deleteSQL)) {
+            pstmt.setInt(1, id);
+            int rowsDeleted = pstmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                return true;
+            } else{
+                return false;
+            }
         } 
     }
 }

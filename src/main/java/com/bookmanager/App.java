@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Scanner;
 import java.sql.SQLException;
 /**
@@ -22,8 +23,10 @@ public class App
         Scanner scanner = new Scanner(System.in, "MS932");
 
         try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);){
+
+            BookDAO dao = new BookDAO(conn);
             //テーブル作成    
-            setupTable(conn);
+            dao.setupTable();
 
             //ユーザから入力を受け取る
             System.out.println("====本の登録====");
@@ -33,31 +36,18 @@ public class App
             String author = scanner.nextLine();
 
             //Insert文
-            String insertSQL = "INSERT INTO books (title, author) VALUES (?, ?)";
-            try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
-                pstmt.setString(1, title);
-                pstmt.setString(2, author);
-
-                int rowsInserted = pstmt.executeUpdate();
-                if(rowsInserted > 0){
-                    System.out.println("データベース保存しました！");
-                }
+            Book insertBook = new Book(title, author);
+            if(dao.insert(insertBook)){
+                System.out.println("保存しました。");
             }
+
 
             //select文
             System.out.println("====蔵書一覧====");
 
-            String selectSQL = "SELECT id, title, author FROM books";
-            try (PreparedStatement pstmt = conn.prepareStatement(selectSQL);
-                ResultSet rs = pstmt.executeQuery()) {
-                    
-                    while (rs.next()) {
-                        int id = rs.getInt("id");
-                        String bTitle = rs.getString("title");
-                        String bAuthor = rs.getString("author");
-                        System.out.println(id + ": " + bTitle + "（" + bAuthor + "）");
-                    }
-                
+            List<Book> books = dao.findAll();
+            for(Book book : books){
+                System.out.println(book.getId() + " : " + book.getTitle() + "（" + book.getAuthor() + "）");
             }
 
             //delete文
