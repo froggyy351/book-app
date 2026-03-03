@@ -2,8 +2,11 @@ package com.bookmanager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookDAO {
     private Connection conn;
@@ -26,5 +29,26 @@ public class BookDAO {
             int rowsInserted = pstmt.executeUpdate();
             return rowsInserted > 0;
         }
+    }
+
+    public List<Book> findAll() throws SQLException {
+        String selectSQL = "SELECT id, title, author FROM books";        
+        List<Book> books = new ArrayList<>();
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(selectSQL);
+                ResultSet rs = pstmt.executeQuery();) {
+
+                    while (rs.next()) {
+                        int id = rs.getInt("id");
+                        String title = rs.getString("title");
+                        String author = rs.getString("author");
+                        Book book = new Book(id, title, author);
+                        
+                        //Listに追加
+                        books.add(book);
+                    }
+                    
+                    return books;
+        } 
     }
 }
