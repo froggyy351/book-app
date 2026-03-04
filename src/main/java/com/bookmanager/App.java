@@ -2,9 +2,6 @@ package com.bookmanager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Scanner;
 import java.sql.SQLException;
@@ -57,15 +54,10 @@ public class App
             System.out.println("削除したい蔵書のIDを入力してね");
             int deleteId = scanner.nextInt();
 
-            String deleteSQL = "DELETE FROM books where id = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(deleteSQL)) {
-                pstmt.setInt(1, deleteId );
-                int rowsDeleted = pstmt.executeUpdate();
-                if(rowsDeleted > 0){
-                    System.out.println("ID: " + deleteId + "の書籍をDBから削除しました。");
-                } else {
-                    System.out.println("該当するIDが見つかりませんでした。");
-                }
+            if(dao.deleteById(deleteId)){
+                System.out.println("ID: " + deleteId + "の書籍をDBから削除しました。");
+            } else {
+                System.out.println("該当するIDが見つかりませんでした。");
             }
 
             System.out.println("=============");
@@ -78,9 +70,4 @@ public class App
         }
     }
 
-    public static void setupTable(Connection conn) throws SQLException {
-        try(Statement stmt = conn.createStatement()){
-            stmt.execute("CREATE TABLE IF NOT EXISTS books (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255) NOT NULL, author VARCHAR(255))");
-        }
-    }
 }
